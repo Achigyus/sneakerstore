@@ -11,7 +11,7 @@ import { NavLink } from 'react-router-dom';
 import { Footer } from '../components'
 import erc20Abi from "../contract/erc20Abi.json"
 import sneakerstoreAbi from "../contract/sneakerstore.abi.json"
-import { blockies } from 'ethereum-blockies';
+import Blockies from 'react-blockies'
 
 const cEURContractAddress = "0x10c892A6EC43a53E45D0B916B4b7D383B1b78C0F"
 const cUSDContractAddress = "0x874069Fa1Eb16D44d622F2e0Ca25eeA172369bC1"
@@ -480,24 +480,33 @@ function SneakerStore() {
                 <div className='cards'>
                     {!isRender ? <></> : <>
                         {products.map((sneaker) => (
-                            <div className={sneaker.name ? 'cards-container' : 'cards-box-none'} key={sneaker.index}>
-                                <div className={sneaker.name ? 'cards-box' : 'cards-box-none'} id={sneaker.index}>
+                            <div className={sneaker.owner !== "0x0000000000000000000000000000000000000000" ? 'cards-container' : 'cards-box-none'} key={sneaker.index}>
+                                <div className={sneaker.owner !== "0x0000000000000000000000000000000000000000" ? 'cards-box' : 'cards-box-none'} id={sneaker.index}>
                                     <div className="boxImg">
                                         <img className="boxImgImg" src={sneaker.image} alt="#" />
                                         <div className='uploaderProf'>
+                                            <a href={`https://alfajores-blockscout.celo-testnet.org/address/${sneaker.owner}/transactions`} target="_blank">
+                                                <Blockies
+                                                    seed={sneaker.owner}
+                                                    size={15}
+                                                    scale={3}
+                                                    className="identicon"
+                                                />
+                                            </a>
                                         </div>
                                     </div>
                                     <div className='box-btm'>
                                         <p className="boxcont itemName">{sneaker.name}</p>
                                         <p className="boxcont itemDesc">{sneaker.description}</p>
+                                        <p className='boxcont unitsAvail'>Size: {sneaker.size}</p>
                                         <p className='boxcont unitsAvail'>Units available: {sneaker.unitsAvailable}</p>
                                         <div className="selected">
                                             <p>{sneaker.sold}</p>
                                             <p>Sold</p>
                                         </div>
-                                        <button className={sneaker.owner.toLowerCase() !== address && sneaker.unitsAvailable !== "0" ? 'buyNowBtn' : 'buyNowBtn-none'} onClick={() => setIsBuyModal(sneaker.index)}>BUY NOW</button>
-                                        <button className={sneaker.owner.toLowerCase() === address ? 'buyNowBtn' : 'buyNowBtn-none'} id={sneaker.index} onClick={deleteSneaker}>DELETE ITEM</button>
-                                        <button className={sneaker.owner.toLowerCase() === address ? 'buyNowBtn' : 'buyNowBtn-none'} onClick={() => setIsEditModal(sneaker.index)}>EDIT ITEM</button>
+                                        <button className={sneaker.owner.toLowerCase() !== address.toLowerCase() && sneaker.unitsAvailable !== "0" ? 'buyNowBtn' : 'buyNowBtn-none'} onClick={() => setIsBuyModal(sneaker.index)}>BUY NOW</button>
+                                        <button className={sneaker.owner.toLowerCase() === address.toLowerCase() ? 'buyNowBtn' : 'buyNowBtn-none'} id={sneaker.index} onClick={deleteSneaker}>DELETE ITEM</button>
+                                        <button className={sneaker.owner.toLowerCase() === address.toLowerCase() ? 'buyNowBtn' : 'buyNowBtn-none'} onClick={() => setIsEditModal(sneaker.index)}>EDIT ITEM</button>
                                         <button className={sneaker.unitsAvailable === "0" ? 'soldOutBtn' : 'buyNowBtn-none'} disabled>SOLD OUT</button>
                                     </div>
                                 </div>

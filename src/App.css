@@ -285,8 +285,8 @@
   left: 20px;
 }
 
-.uploaderProf img {
-  border: 2px solid #08D9D6;
+.uploaderProf canvas {
+  border: 2px solid white;
   border-radius: 50%;
   height: 48px;
 }
@@ -309,8 +309,8 @@
 }
 
 .unitsAvail {
-  margin-top: 24px;
-  margin-bottom: 16px;
+  margin-top: 10px;
+  margin-bottom: 10px;
   font-size: 16px;
 }
 
