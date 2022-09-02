@@ -1,6 +1,8 @@
 # <p>Sneakerstore</p>
 
 ## <p>Description</p>
+[Demo](https://sneakerstore784.netlify.app/) 
+
 Sneakerstore is a dapp made on **Celo Blockchain**. It allows users to buy, and sell
 sneakers on the blockchain 
 
