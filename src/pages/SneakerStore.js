@@ -389,6 +389,7 @@ function SneakerStore() {
 
     return (
         <div className='sneakerStore'>
+            {/* Header */}
             <div className='navHero'>
                 <header className={offset ? "header is_scrolled" : "header"}>
                     <nav className="navbar">
@@ -419,7 +420,9 @@ function SneakerStore() {
                     </nav>
                 </header>
             </div>
+
             <div className='body-wrapper'>
+                {/* Add item and notifications */}
                 <div className='addNotif'>
                     <div className={isNotification ? 'notifications' : 'notifications-none'}>
                         <p>{notificationText}</p>
@@ -477,6 +480,8 @@ function SneakerStore() {
                         </div>
                     </div>
                 </div>
+
+                {/* Template for each item in the contract  */}
                 <div className='cards'>
                     {!isRender ? <></> : <>
                         {products.map((sneaker) => (
@@ -511,6 +516,7 @@ function SneakerStore() {
                                     </div>
                                 </div>
 
+                                {/* buy modal */}
                                 <div class="modal" style={isBuyModal === sneaker.index ? { display: "block" } : { display: "none" }}>
                                     <div class="modal-content">
                                         <span class="close" onClick={() => setIsBuyModal(-1)}>&times;</span>
@@ -539,6 +545,7 @@ function SneakerStore() {
                                     </div>
                                 </div>
 
+                                {/* edit item modal */}
                                 <div class="updateModal" style={isEditModal === sneaker.index ? { display: "block" } : { display: "none" }}>
                                     <div class="modal-content">
                                         <span class="closeUpdateModal" onClick={() => setIsEditModal(-1)}>&times;</span>
@@ -583,6 +590,8 @@ function SneakerStore() {
 
                 </div>
             </div>
+
+            {/* footer */}
             <Footer />
         </div>
     )
