@@ -11,14 +11,14 @@ For the *Payment system* Sneakerstore uses **ERC20 tokens** on **Celo Blockchain
 platform
 - Users can also edit the sneakers they add to the platform  
 ## <p>Specifications</p>
-- Sneakerstore Website - [Sneakerstore](https://subvid-stream.vercel.app/)
-- Smart Contracts Repository - [Sneakerstore_contracts Repo](https://github.com/achigyus/sneakerstore/src/contracts)
+- Sneakerstore Website - [Sneakerstore](https://sneakerstore784.netlify.app/)
+- Smart Contracts Repository - [Sneakerstore_contracts Repo](https://github.com/Achigyus/sneakerstore/tree/main/src/contract)
 - Deployed Contract Address - 0xB8596A52f6782a8490039069E9f6235aa2028c61
 - Testnet - Alphajores
 - Blockchain - Celo
 
 ## <p>Technologies Used</p>
-- Solidity for developing **[Sneakerstore_contracts Repo](https://github.com/achigyus/sneakerstore/src/contracts)**
+- Solidity for developing **[Sneakerstore_contracts Repo](https://github.com/Achigyus/sneakerstore/tree/main/src/contract)**
 - React for Website UI
 - Remix to test and deploy contracts
 - React-celo
@@ -33,7 +33,7 @@ platform
 6. Get some testnet tokens from the [Celo Developer Faucet](https://celo.org/developers/faucet)
 7. You're ready to interact
 
-## <p>Contribute to Subvid</p>
+## <p>Contribute to Sneakerstore</p>
 To contribute to this project follow these guidelines
 1. Fork the project repo
 2. Clone the repo to your local machine using git
