@@ -212,6 +212,11 @@
   background-color: #fff3cd;
   border: 2px solid #ffecb5;
   border-radius: 8px;
+  transition: all ease 0.6s;
+}
+
+.notifications-none{
+  display: none;
 }
 
 .addBtn {
@@ -230,41 +235,47 @@
 /* Box Styles */
 
 .body-wrapper {
-  max-width: 1280px;
-  margin: auto;
+  padding: 0 20px;
   margin-top: 120px;
 }
 
 .cards {
   display: flex;
   align-items: stretch;
-  justify-content: center;
   flex-wrap: wrap;
   margin-bottom: 90px;
   gap: 20px;
 }
 
-.cards-box {
-  border: 1px solid #d8d8d8;
+.cards-container {
   flex: 0 0 calc(25% - 20px);
 }
 
 .cards-box {
+  border: 1px solid #d8d8d8;
   position: relative;
   border-radius: 8px;
   background: white;
   display: flex;
   flex-direction: column;
+  height: 100%;
+}
+
+.cards-box-none{
+  display: none;
 }
 
 .boxImg {
+  width: 100%;
   position: relative;
 }
 
 .boxImg>img {
   display: inline-block;
   width: 100%;
-  height: 100%;
+  height: 300px;
+  object-fit: cover;
+  object-position: center;
   border-radius: 8px 8px 0 0
 }
 
@@ -292,7 +303,7 @@
 }
 
 .itemDesc {
-  font-size: 16px;
+  font-size: 14px;
   min-height: 82px;
   margin-bottom: 24px;
 }
@@ -342,6 +353,23 @@
   margin-bottom: 10px;
 }
 
+.soldOutBtn{
+  width: 100%;
+  padding: 10px 20px;
+  background: transparent;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: not-allowed;
+  border-radius: 6px;
+  margin-bottom: 10px;
+  border: 2px solid red;
+  color: red;
+}
+
+.buyNowBtn-none{
+  display: none;
+}
+
 .buyNowBtn:hover {
   background: black;
   color: white;
@@ -354,7 +382,7 @@
   /* display: none; */
   position: fixed;
   z-index: 1;
-  padding-top: 150px;
+  padding-top: 100px;
   left: 0;
   top: 0;
   width: 100%;
@@ -407,8 +435,12 @@
   width: 20%;
 }
 
-.title--desc p {
+.title--desc p{
   margin-bottom: 10px;
+}
+
+.title--desc p:nth-of-type(3) {
+  font-size: 14px;
 }
 
 .sneakImg {
@@ -492,9 +524,21 @@
 
   /* Navbar styles */
   .navHero {
-    padding-top: 160px;
-    padding-bottom: 60px;
+    padding-top: 0px;
+    padding-bottom: 50px;
     min-height: auto;
+  }
+
+  .ReactModal__Overlay{
+    padding-top: 80px;
+  }
+
+  .body-wrapper{
+    margin-top: 0;
+  }
+
+  .heroSection{
+    margin-top: 0;
   }
 
   .header {
@@ -528,6 +572,18 @@
     display: block;
     z-index: 99;
   }
+
+  .cards-container {
+    flex: 0 0 calc(50% - 20px);
+  }
+
+  .sneaker--details{
+    flex-direction: column;
+  }
+
+  .sneakImg, .title--desc, .size--buy{
+    width: 100%;
+  }
 }
 
 @media screen and (max-width:600px) {
@@ -541,5 +597,14 @@
 
   .navbar-logo img:nth-of-type(2) {
     display: inline-block;
+  }
+
+  .cards-container {
+    flex: 0 0 calc(100% - 20px);
+  }
+
+  .heroSection{
+    margin-top: 0;
+    background: url(./images/sneakerLogo-mob.png) no-repeat center;
   }
 }
