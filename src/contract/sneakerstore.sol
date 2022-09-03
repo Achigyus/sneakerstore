@@ -28,13 +28,28 @@ contract Sneakerstore {
         string description;
         uint size;
         uint unitsAvailable;
-        uint price;
+        uint cUSDPrice;
         uint cEURPrice;
         uint cREALPrice;
         uint sold;
     }
 
     mapping (uint => Sneaker) internal sneakers;
+
+    modifier onlyOwner(uint _index){
+        require(msg.sender == sneakers[_index].owner, "Only the owner can access this function");
+        _;
+    }
+
+    modifier isAvailable(uint _index, uint _quantity){
+        require(sneakers[_index].unitsAvailable > _quantity, "Not enough Stocks");
+        _;
+    }
+
+    modifier notOwner(uint _index){
+        require(msg.sender != sneakers[_index].owner, "Owner cannot buy their sneaker");
+        _;
+    }
 
     function newSneaker(
         string memory _name,
@@ -62,6 +77,79 @@ contract Sneakerstore {
         sneakersLength++;
     }
 
+    //Buy Functions
+
+    function buySneakerCusd(uint _index, uint _quantity) public payable isAvailable(_index, _quantity) notOwner(_index) {
+        require(
+          IERC20Token(cUsdTokenAddress).transferFrom(
+            msg.sender,
+            sneakers[_index].owner,
+            sneakers[_index].cUSDPrice * _quantity
+          ),
+          "Transfer failed."
+        );
+        makeSaleAdjustments(_index, _quantity);
+    }
+
+    function buySneakerCeur(uint _index, uint _quantity) public payable isAvailable(_index, _quantity) notOwner(_index){
+        require(
+          IERC20Token(cEurTokenAddress).transferFrom(
+            msg.sender,
+            sneakers[_index].owner,
+            sneakers[_index].cEURPrice * _quantity
+          ),
+          "Transfer failed."
+        );
+        makeSaleAdjustments(_index, _quantity);
+    }
+
+    function buySneakerCreal(uint _index, uint _quantity) public payable  isAvailable(_index, _quantity) notOwner(_index){
+        require(
+          IERC20Token(cRealTokenAddress).transferFrom(
+            msg.sender,
+            sneakers[_index].owner,
+            sneakers[_index].cREALPrice * _quantity
+          ),
+          "Transfer failed."
+        );
+        makeSaleAdjustments(_index, _quantity);
+    }
+    
+    function makeSaleAdjustments(uint _index, uint _quantity) internal{
+        sneakers[_index].sold+= _quantity;
+        sneakers[_index].unitsAvailable-= _quantity;
+    }
+
+
+    function editSneaker(
+        uint _index,
+        string memory _name,
+        string memory _image,
+        string memory _description,
+        uint _size,
+        uint _unitsAvailable, 
+        uint _price,
+        uint _cEURPrice,
+        uint _cREALPrice 
+        )
+        public onlyOwner(_index){
+        sneakers[_index].name = _name;
+        sneakers[_index].image = _image;
+        sneakers[_index].description =  _description;
+        sneakers[_index].size =  _size;
+        sneakers[_index].unitsAvailable = _unitsAvailable;
+        sneakers[_index].cUSDPrice = _price;
+        sneakers[_index].cEURPrice = _cEURPrice;
+        sneakers[_index].cREALPrice = _cREALPrice;
+    }
+
+    
+    function removeSneakers( uint _index) public onlyOwner(_index){
+        delete sneakers[_index];
+    }
+
+    //View Functions
+
     function readSneakers(uint _index) public view returns (
         address payable,
         string memory, 
@@ -87,94 +175,14 @@ contract Sneakerstore {
         return (
         sneakers[_index].size,
         sneakers[_index].unitsAvailable,
-        sneakers[_index].price,
+        sneakers[_index].cUSDPrice,
         sneakers[_index].cEURPrice,
         sneakers[_index].cREALPrice,
         sneakers[_index].sold
         );
     }
 
-    function buySneakerCusd(uint _index) public payable  {
-        require(!(sneakers[_index].unitsAvailable == 0),
-            "Sold out"
-        );
-
-        require(
-          IERC20Token(cUsdTokenAddress).transferFrom(
-            msg.sender,
-            sneakers[_index].owner,
-            sneakers[_index].price
-          ),
-          "Transfer failed."
-        );
-        sneakers[_index].sold++;
-        sneakers[_index].unitsAvailable--;
-    }
-
-    function buySneakerCeur(uint _index) public payable  {
-        require(!(sneakers[_index].unitsAvailable == 0),
-            "Sold out"
-        );
-
-        require(
-          IERC20Token(cEurTokenAddress).transferFrom(
-            msg.sender,
-            sneakers[_index].owner,
-            sneakers[_index].cEURPrice
-          ),
-          "Transfer failed."
-        );
-        sneakers[_index].sold++;
-        sneakers[_index].unitsAvailable--;
-    }
-
-    function buySneakerCreal(uint _index) public payable  {
-        require(!(sneakers[_index].unitsAvailable == 0),
-            "Sold out"
-        );
-
-        require(
-          IERC20Token(cRealTokenAddress).transferFrom(
-            msg.sender,
-            sneakers[_index].owner,
-            sneakers[_index].cREALPrice
-          ),
-          "Transfer failed."
-        );
-        sneakers[_index].sold++;
-        sneakers[_index].unitsAvailable--;
-    }
-    
     function getSneakersLength() public view returns (uint) {
         return (sneakersLength);
-    }
-
-    function editSneaker(
-        uint _index,
-        string memory _name,
-        string memory _image,
-        string memory _description,
-        uint _size,
-        uint _unitsAvailable, 
-        uint _price,
-        uint _cEURPrice,
-        uint _cREALPrice 
-        )
-        public {
-        require(sneakers[_index].owner == msg.sender,"Access denied!,only artwork owner can edit artwork");
-        sneakers[_index].name = _name;
-        sneakers[_index].image = _image;
-        sneakers[_index].description =  _description;
-        sneakers[_index].size =  _size;
-        sneakers[_index].unitsAvailable = _unitsAvailable;
-        sneakers[_index].price = _price;
-        sneakers[_index].cEURPrice = _cEURPrice;
-        sneakers[_index].cREALPrice = _cREALPrice;
-    }
-
-    
-    function removeSneakers( uint _index) public {
-        require(sneakers[_index].owner == msg.sender,"Access denied!,only artwork owner can remove artwork");
-        delete sneakers[_index];
     }
 }
