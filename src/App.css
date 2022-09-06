@@ -476,6 +476,23 @@
   color: white;
 }
 
+.quantity{
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.quantity input{
+  width: 3rem;
+  padding: 10px;
+  padding-right: 5px;
+  border-radius: 8px;
+  border: 1px solid #d8d8d8;
+  outline: none;
+}
+
 .col{
   margin-bottom: 10px;
 }

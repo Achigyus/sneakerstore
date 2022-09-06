@@ -16,7 +16,7 @@ import Blockies from 'react-blockies'
 const cEURContractAddress = "0x10c892A6EC43a53E45D0B916B4b7D383B1b78C0F"
 const cUSDContractAddress = "0x874069Fa1Eb16D44d622F2e0Ca25eeA172369bC1"
 const cREALContractAddress = "0xE4D517785D091D3c54818832dB6094bcc2744545"
-const MPContractAddress = "0xB8596A52f6782a8490039069E9f6235aa2028c61"
+const MPContractAddress = "0xE6c04Bbaf5097101324DE011C7135018AA52Ff8A"
 const ercAbi = erc20Abi.result
 const ERC20_DECIMALS = 18
 const readableNum = 1000000000000000000
@@ -74,10 +74,6 @@ function SneakerStore() {
     const [cUSDContract, setCUSDContract] = useState(null)
     const [cEURContract, setCEURContract] = useState(null)
     const [cREALContract, setCREALContract] = useState(null)
-    const [editedPN, setEditedPN] = useState("")
-    const [editedIU, setEditedIU] = useState("")
-    const [editedPD, setEditedPD] = useState("")
-    const [editedS, setEditedS] = useState("")
     const [editedAU, setEditedAU] = useState("")
     const [editedP, setEditedP] = useState("")
     const [isNotification, setIsNotification] = useState(true)
@@ -86,6 +82,7 @@ function SneakerStore() {
     const [ceurbal, setceurbal] = useState("0.00")
     const [crealbal, setcrealbal] = useState("0.00")
     const [isConnected, setIsConnected] = useState("Connect Wallet")
+    const [qtyToBuy, setQtyToBuy] = useState(0)
 
     useEffect(() => {
         window.onscroll = () => {
@@ -127,11 +124,23 @@ function SneakerStore() {
 
     const buyWithCUSD = async (e) => {
         let index = e.target.id
-        console.log(index)
+        let parseQty = parseInt(qtyToBuy)
+        let approvedAmt = BigNumber(products[index].cUSDPrice).multipliedBy(parseQty)
+
+        if (parseQty === 0) {
+            notification(`Please select a quantity to buy 🙂`)
+            setIsBuyModal(-1)
+            return
+        } else if (parseQty > products[index].unitsAvailable) {
+            notification(`You can't buy more than the units available 🙃`)
+            setIsBuyModal(-1)
+            return
+        }
         await performActions(async (kit) => {
             try {
-                notification(`⌛ Buying ${products[index].name}. Please approve the txs...`)
-                await approveCUSD(products[index].price)
+                notification(`⌛ Buying ${products[index].name}. Please approve the txs, make sure you have enough cUSD...`)
+                console.log((products[index].cUSDPrice))
+                await approveCUSD(approvedAmt)
             } catch (error) {
                 notification(`⚠️${error}`)
             }
@@ -141,7 +150,7 @@ function SneakerStore() {
             try {
                 contract = new kit.contracts.connection.web3.eth.Contract(sneakerstoreAbi, MPContractAddress)
                 const result = await contract.methods
-                    .buySneakerCusd(index)
+                    .buySneakerCusd(index, parseQty)
                     .send({ from: address })
                 notification(`🍾 You successfully bought ${products[index].name}`)
                 getSneakers()
@@ -157,11 +166,22 @@ function SneakerStore() {
 
     const buyWithCEUR = async (e) => {
         let index = e.target.id
-        console.log(index)
+        let parseQty = parseInt(qtyToBuy)
+        let approvedAmt = BigNumber(products[index].cEURPrice).multipliedBy(parseQty)
+
+        if (parseQty === 0) {
+            notification(`Please select a quantity to buy 🙂`)
+            setIsBuyModal(-1)
+            return
+        } else if (parseQty > products[index].unitsAvailable) {
+            notification(`You can't buy more than the units available 🙃`)
+            setIsBuyModal(-1)
+            return
+        }
         await performActions(async (kit) => {
             try {
-                notification(`⌛ Buying ${products[index].name}. Please confirm the tx...`)
-                await approveCEUR(products[index].cEURPrice)
+                notification(`⌛ Buying ${products[index].name}. Please confirm the tx, make sure you have enough cUSD...`)
+                await approveCEUR(approvedAmt)
             } catch (error) {
                 notification(`⚠️${error}`)
             }
@@ -171,7 +191,7 @@ function SneakerStore() {
             try {
                 contract = new kit.contracts.connection.web3.eth.Contract(sneakerstoreAbi, MPContractAddress)
                 const result = await contract.methods
-                    .buySneakerCeur(index)
+                    .buySneakerCeur(index, parseQty)
                     .send({ from: address })
                 notification(`🍾 You successfully bought ${products[index].name}`)
                 getSneakers()
@@ -187,11 +207,22 @@ function SneakerStore() {
 
     const buyWithCREAL = async (e) => {
         let index = e.target.id
-        console.log(index)
+        let parseQty = parseInt(qtyToBuy)
+        let approvedAmt = BigNumber(products[index].cREALPrice).multipliedBy(parseQty)
+
+        if (parseQty === 0) {
+            notification(`Please select a quantity to buy 🙂`)
+            setIsBuyModal(-1)
+            return
+        } else if (parseQty > products[index].unitsAvailable) {
+            notification(`You can't buy more than the units available 🙃`)
+            setIsBuyModal(-1)
+            return
+        }
         await performActions(async (kit) => {
             try {
-                notification(`⌛ Buying ${products[index].name}. Please confirm the tx...`)
-                await approveCREAL(products[index].cREALPrice)
+                notification(`⌛ Buying ${products[index].name}. Please confirm the tx, make sure you have enough cUSD...`)
+                await approveCREAL(approvedAmt)
             } catch (error) {
                 notification(`⚠️${error}`)
             }
@@ -201,7 +232,7 @@ function SneakerStore() {
             try {
                 contract = new kit.contracts.connection.web3.eth.Contract(sneakerstoreAbi, MPContractAddress)
                 const result = await contract.methods
-                    .buySneakerCreal(index)
+                    .buySneakerCreal(index, parseQty)
                     .send({ from: address })
                 notification(`🍾 You successfully bought ${products[index].name}`)
                 getSneakers()
@@ -259,7 +290,7 @@ function SneakerStore() {
                     description: p[3],
                     size: g[0],
                     unitsAvailable: g[1],
-                    price: new BigNumber(g[2]),
+                    cUSDPrice: new BigNumber(g[2]),
                     cEURPrice: new BigNumber(g[3]),
                     cREALPrice: new BigNumber(g[4]),
                     sold: g[5],
@@ -317,10 +348,6 @@ function SneakerStore() {
             contract = new kit.contracts.connection.web3.eth.Contract(sneakerstoreAbi, MPContractAddress)
             const params = [
                 index,
-                editedPN,
-                editedIU,
-                editedPD,
-                editedS,
                 editedAU,
                 new BigNumber(parseInt(editedP))
                     .shiftedBy(ERC20_DECIMALS)
@@ -387,6 +414,27 @@ function SneakerStore() {
         notificationOff()
     }
 
+    const getInput = (e) => {
+        let input = e.target.value
+        setQtyToBuy(input)
+    }
+
+    const con = () => {
+        console.log(qtyToBuy)
+    }
+
+    const increaseQty = () => {
+        setQtyToBuy((prevState)=>{
+            return parseInt(prevState) + 1
+        })
+    }
+
+    const decreaseQty = () => {
+        setQtyToBuy((prevState)=>{
+            return parseInt(prevState) - 1
+        })
+    }
+
     return (
         <div className='sneakerStore'>
             {/* Header */}
@@ -403,7 +451,7 @@ function SneakerStore() {
                         <div className={isActive ? "links-quote active" : "links-quote"}>
                             <div className="navbar-links">
                                 <ul className="navbar-Ul">
-                                    <li className="navbar-Li"><img src={logo3} alt='cusd' />{cusdbal} cUSD</li>
+                                    <li className="navbar-Li" onClick={con}><img src={logo3} alt='cusd' />{cusdbal} cUSD</li>
                                     <li className="navbar-Li"><img src={logo4} alt='ceur' />{ceurbal} cEUR</li>
                                     <li className="navbar-Li"><img src={logo5} alt='creal' />{crealbal} cREAL</li>
                                 </ul>
@@ -415,7 +463,7 @@ function SneakerStore() {
                         </div>
 
                         <div className="dropDown" onClick={() => { setIsActive(!isActive); console.log(isActive) }}>
-                            <i class="fa-solid fa-bars"></i>
+                            <i className="fa-solid fa-bars"></i>
                         </div>
                     </nav>
                 </header>
@@ -441,39 +489,39 @@ function SneakerStore() {
                     }
 
 
-                    <div class="addModal" style={isAddModal ? { display: "block" } : { display: "none" }}>
-                        <div class="modal-content">
-                            <span class="closeAddModal" onClick={() => setIsAddModal(false)}>&times;</span>
+                    <div className="addModal" style={isAddModal ? { display: "block" } : { display: "none" }}>
+                        <div className="modal-content">
+                            <span className="closeAddModal" onClick={() => setIsAddModal(false)}>&times;</span>
                             <form>
-                                <div class="form-row">
-                                    <div class="col">
+                                <div className="form-row">
+                                    <div className="col">
                                         <input type="text" id="productName"
                                             placeholder="Enter name of product" />
                                     </div>
-                                    <div class="col">
+                                    <div className="col">
                                         <input type="text" id="imgUrl" placeholder="Enter image url" />
                                     </div>
-                                    <div class="col">
+                                    <div className="col">
                                         <input type="text" id="productDescription"
                                             placeholder="Enter product description" />
                                     </div>
-                                    <div class="col">
+                                    <div className="col">
                                         <input type="text" id="size" placeholder="Enter Size" />
                                     </div>
-                                    <div class="col">
+                                    <div className="col">
                                         <input type="text" id="availableUnits"
                                             placeholder="Enter Available Units" />
                                     </div>
-                                    <div class="col">
+                                    <div className="col">
                                         <input type="text" id="price" placeholder="Enter price" />
                                     </div>
                                 </div>
                             </form>
-                            <div class="modal-footer">
-                                <button onClick={() => setIsAddModal(false)} type="button" class="closeAddModalBtn">
+                            <div className="modal-footer">
+                                <button onClick={() => setIsAddModal(false)} type="button" className="closeAddModalBtn">
                                     Close
                                 </button>
-                                <button type="button" class="addProduct" onClick={() => newSneaker()}>
+                                <button type="button" className="addProduct" onClick={() => newSneaker()}>
                                     Add product
                                 </button>
                             </div>
@@ -509,7 +557,7 @@ function SneakerStore() {
                                             <p>{sneaker.sold}</p>
                                             <p>Sold</p>
                                         </div>
-                                        <button className={sneaker.owner.toLowerCase() !== address.toLowerCase() && sneaker.unitsAvailable !== "0" ? 'buyNowBtn' : 'buyNowBtn-none'} onClick={() => setIsBuyModal(sneaker.index)}>BUY NOW</button>
+                                        <button className={sneaker.owner.toLowerCase() !== address.toLowerCase() && sneaker.unitsAvailable !== "0" ? 'buyNowBtn' : 'buyNowBtn-none'} onClick={() => {setIsBuyModal(sneaker.index) ; setQtyToBuy(0)}}>BUY NOW</button>
                                         <button className={sneaker.owner.toLowerCase() === address.toLowerCase() ? 'buyNowBtn' : 'buyNowBtn-none'} id={sneaker.index} onClick={deleteSneaker}>DELETE ITEM</button>
                                         <button className={sneaker.owner.toLowerCase() === address.toLowerCase() ? 'buyNowBtn' : 'buyNowBtn-none'} onClick={() => setIsEditModal(sneaker.index)}>EDIT ITEM</button>
                                         <button className={sneaker.unitsAvailable === "0" ? 'soldOutBtn' : 'buyNowBtn-none'} disabled>SOLD OUT</button>
@@ -517,27 +565,32 @@ function SneakerStore() {
                                 </div>
 
                                 {/* buy modal */}
-                                <div class="modal" style={isBuyModal === sneaker.index ? { display: "block" } : { display: "none" }}>
-                                    <div class="modal-content">
-                                        <span class="close" onClick={() => setIsBuyModal(-1)}>&times;</span>
-                                        <div class="sneaker--details">
-                                            <div class="sneakImg">
+                                <div className="modal" style={isBuyModal === sneaker.index ? { display: "block" } : { display: "none" }}>
+                                    <div className="modal-content">
+                                        <span className="close" onClick={() => setIsBuyModal(-1)}>&times;</span>
+                                        <div className="sneaker--details">
+                                            <div className="sneakImg">
                                                 <img src={sneaker.image} alt="#" />
                                             </div>
-                                            <div class="title--desc">
-                                                <p class="name">{sneaker.name}</p>
-                                                <p class="size">Sizes Available: {sneaker.size}</p>
-                                                <p class="desc">{sneaker.description}</p>
-                                                <p class="desc">Units Available: {sneaker.unitsAvailable}</p>
+                                            <div className="title--desc">
+                                                <p className="name">{sneaker.name}</p>
+                                                <p className="size">Sizes Available: {sneaker.size}</p>
+                                                <p className="desc">{sneaker.description}</p>
+                                                <p className="desc">Units Available: {sneaker.unitsAvailable}</p>
                                             </div>
-                                            <div class="size--buy">
-                                                <button class="buyCUSDBtn" onClick={buyWithCUSD} id={sneaker.index} aria-disabled="true">
-                                                    Buy for {(sneaker.price / readableNum).toFixed(2)} cUSD
+                                            <div className="size--buy">
+                                                <div className='quantity'>
+                                                    <i className="fa-solid fa-minus" onClick={decreaseQty}></i>
+                                                    <input onChange={getInput} type="number" value={qtyToBuy} min={1} max={sneaker.unitsAvailable}/>
+                                                    <i className="fa-solid fa-plus" onClick={increaseQty}></i>
+                                                </div>
+                                                <button className="buyCUSDBtn" onClick={buyWithCUSD} id={sneaker.index} aria-disabled="true">
+                                                    Buy for {(sneaker.cUSDPrice / readableNum).toFixed(2)} cUSD
                                                 </button>
-                                                <button class="buyCEURBtn" onClick={buyWithCEUR} id={sneaker.index} aria-disabled="true">
+                                                <button className="buyCEURBtn" onClick={buyWithCEUR} id={sneaker.index} aria-disabled="true">
                                                     Buy for {(sneaker.cEURPrice / readableNum).toFixed(2)} cEUR
                                                 </button>
-                                                <button class="buyCEURBtn" onClick={buyWithCREAL} id={sneaker.index} aria-disabled="true">
+                                                <button className="buyCEURBtn" onClick={buyWithCREAL} id={sneaker.index} aria-disabled="true">
                                                     Buy for {(sneaker.cREALPrice / readableNum).toFixed(2)} cREAL
                                                 </button>
                                             </div>
@@ -546,39 +599,25 @@ function SneakerStore() {
                                 </div>
 
                                 {/* edit item modal */}
-                                <div class="updateModal" style={isEditModal === sneaker.index ? { display: "block" } : { display: "none" }}>
-                                    <div class="modal-content">
-                                        <span class="closeUpdateModal" onClick={() => setIsEditModal(-1)}>&times;</span>
+                                <div className="updateModal" style={isEditModal === sneaker.index ? { display: "block" } : { display: "none" }}>
+                                    <div className="modal-content">
+                                        <span className="closeUpdateModal" onClick={() => setIsEditModal(-1)}>&times;</span>
                                         <form>
-                                            <div class="form-row">
-                                                <div class="col">
-                                                    <input type="text"
-                                                        placeholder="Enter name of product" onChange={(e) => setEditedPN(e.target.value)} />
-                                                </div>
-                                                <div class="col">
-                                                    <input type="text" onChange={(e) => setEditedIU(e.target.value)} placeholder="Enter image url" />
-                                                </div>
-                                                <div class="col">
-                                                    <input type="text" onChange={(e) => setEditedPD(e.target.value)}
-                                                        placeholder="Enter product description" />
-                                                </div>
-                                                <div class="col">
-                                                    <input type="text" onChange={(e) => setEditedS(e.target.value)} placeholder="Enter Size" />
-                                                </div>
-                                                <div class="col">
+                                            <div className="form-row">
+                                                <div className="col">
                                                     <input type="text" onChange={(e) => setEditedAU(e.target.value)}
                                                         placeholder="Enter Available Units" />
                                                 </div>
-                                                <div class="col">
+                                                <div className="col">
                                                     <input type="text" onChange={(e) => { setEditedP(e.target.value) }} placeholder="Enter price" />
                                                 </div>
                                             </div>
                                         </form>
-                                        <div class="modal-footer">
-                                            <button onClick={() => setIsEditModal(-1)} type="button" class="closeUpdateModalBtn">
+                                        <div className="modal-footer">
+                                            <button onClick={() => setIsEditModal(-1)} type="button" className="closeUpdateModalBtn">
                                                 Close
                                             </button>
-                                            <button type="button" class="editProduct" id={sneaker.index} onClick={editSneaker}>
+                                            <button type="button" className="editProduct" id={sneaker.index} onClick={editSneaker}>
                                                 Edit product
                                             </button>
                                         </div>
